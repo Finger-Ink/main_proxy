@@ -71,6 +71,10 @@ defmodule MasterProxy.Cowboy2Handler do
     raise "MasterProxy expected #{inspect(plug)} to return Plug.Conn but got: " <> inspect(other)
   end
 
+  defp backend_matches?(conn, %{host_strings: hosts}) when is_list(hosts) do
+    conn.host in hosts
+  end
+
   defp backend_matches?(conn, backend) do
     verb = Map.get(backend, :verb) || ~r/.*/
     host = Map.get(backend, :host) || ~r/.*/
