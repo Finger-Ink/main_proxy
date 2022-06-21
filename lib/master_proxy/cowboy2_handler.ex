@@ -41,7 +41,7 @@ defmodule MasterProxy.Cowboy2Handler do
 
   defp dispatch(%{phoenix_endpoint: endpoint}, req) do
     # we don't pass in any opts here because that is how phoenix does it
-    # see https://github.com/phoenixframework/phoenix/blob/master/lib/phoenix/endpoint/cowboy2_adapter.ex#L42
+    # see https://github.com/phoenixframework/phoenix/blob/v1.5.7/lib/phoenix/endpoint/cowboy2_adapter.ex#L41
     Phoenix.Endpoint.Cowboy2Handler.init(req, {endpoint, endpoint.init([])})
   end
 
@@ -76,12 +76,17 @@ defmodule MasterProxy.Cowboy2Handler do
   end
 
   defp backend_matches?(conn, backend) do
-    verb = Map.get(backend, :verb) || ~r/.*/
-    host = Map.get(backend, :host) || ~r/.*/
-    path = Map.get(backend, :path) || ~r/.*/
+    verb = Map.get(backend, :verb)
+    domain = Map.get(backend, :domain)
+    host = Map.get(backend, :host)
+    path = Map.get(backend, :path)
 
-    Regex.match?(host, conn.host) && Regex.match?(path, conn.request_path) &&
-      Regex.match?(verb, conn.method)
+    verb_match = if verb, do: Regex.match?(verb, conn.method), else: true
+    domain_match = if domain, do: conn.host == domain, else: true
+    host_match = if host, do: Regex.match?(host, conn.host), else: true
+    path_match = if path, do: Regex.match?(path, conn.request_path), else: true
+
+    verb_match && domain_match && host_match && path_match
   end
 
   ## Websocket callbacks
