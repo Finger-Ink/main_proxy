@@ -31,6 +31,8 @@ defmodule MainProxy.Plug do
     raise "Expected backends to be a list, instead got #{inspect(backends)}"
   end
 
+  defp backend_matches?(conn, %{host_strings: hosts}) when is_list(hosts), do: conn.host in hosts
+
   defp backend_matches?(conn, backend) do
     verb = Map.get(backend, :verb)
     domain = Map.get(backend, :domain)
