@@ -20,7 +20,7 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-master_proxy-*.tar
+main_proxy-*.tar
 
 # Ignore language server cache
 .elixir_ls
